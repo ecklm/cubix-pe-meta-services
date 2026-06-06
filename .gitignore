@@ -10,10 +10,10 @@
 tfplan
 
 # Local variable files
-*.auto.tfvars
-*.auto.tfvars.json
-terraform.tfvars
-terraform.tfvars.json
+# *.auto.tfvars
+# *.auto.tfvars.json
+# terraform.tfvars
+# terraform.tfvars.json
 
 # CLI override files
 override.tf

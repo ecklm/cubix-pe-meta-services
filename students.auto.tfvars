@@ -1,0 +1,17 @@
+student_zones = {
+  alice = {
+    subdomain_name = "alice"
+    name_servers = [
+      "ns1.alice.example.com.",
+      "ns2.alice.example.com.",
+    ]
+  }
+
+  bob = {
+    subdomain_name = "bob"
+    name_servers = [
+      "ns1.bob.example.com.",
+      "ns2.bob.example.com.",
+    ]
+  }
+}
