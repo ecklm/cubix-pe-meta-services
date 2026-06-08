@@ -18,6 +18,7 @@
 ## GitHub Actions / OIDC
 - `.github/workflows/terraform.yml` runs `plan` on PRs, `apply` on pushes to `main`, and supports manual `workflow_dispatch` with `action = plan|apply`.
 - PR plans are gated by the GitHub Environment `terraform-plan-approval`; configure that environment with required reviewers so PR checks stay pending until explicitly approved.
+- `main` branch protection requires the `Terraform Plan` status check with admin enforcement enabled; PR reviews are not required.
 - Workflow expects GitHub secret `AZURE_CLIENT_ID`; tenant and subscription IDs are hardcoded in workflow/provider.
 - `scripts/setup-github-oidc.sh` creates/reuses user-assigned managed identity `cubix-metaservices-github-terraform`, adds GitHub federated credentials, assigns Azure roles, and sets `AZURE_CLIENT_ID` via `gh secret set`.
 - The OIDC setup script requires authenticated `az` and `gh`; run `gh auth login` first if needed.
