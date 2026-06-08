@@ -14,4 +14,12 @@ student_zones = {
       "ns2.bob.example.com.",
     ]
   }
+
+  gerald = {
+    subdomain_name = "gerald"
+    name_servers = [
+      "ns3.bob.example.com.",
+      "ns3.bob.example.com.",
+    ]
+  }
 }
