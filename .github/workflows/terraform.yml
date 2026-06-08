@@ -32,6 +32,8 @@ env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
   ARM_TENANT_ID: 8820d9af-b533-4848-9bf3-ebf24d29d140
   ARM_SUBSCRIPTION_ID: d4d35aad-20e7-4b76-bbb0-944c0f092cc4
+  PORT_CLIENT_ID: ${{ secrets.PORT_CLIENT_ID }}
+  PORT_CLIENT_SECRET: ${{ secrets.PORT_CLIENT_SECRET }}
 
 jobs:
   pull-request-plan:

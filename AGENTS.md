@@ -26,6 +26,7 @@
 - `.github/workflows/port-export.yaml` runs the Port `github-ocean` exporter via `port-labs/ocean-sail@v1`.
 - Port export runs manually via `workflow_dispatch` and hourly by schedule.
 - Workflow expects GitHub secrets `PORT_CLIENT_ID` and `PORT_CLIENT_SECRET`.
+- Terraform's Port provider in `port.io.tf` relies on provider-native `PORT_CLIENT_ID` and `PORT_CLIENT_SECRET` environment variables; Terraform HCL has no `env.PORT_CLIENT_ID` expression.
 
 ## Student Zones
 - `var.student_zones` is a map where each entry has `subdomain_name`, `name_servers`, and optional `ttl` defaulting to `300`.
