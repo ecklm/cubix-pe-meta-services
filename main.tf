@@ -25,3 +25,8 @@ output "cubix_root_name_servers" {
   description = "Name servers for the cubix.ecklm.com public DNS zone."
   value       = azurerm_dns_zone.cubix_root.name_servers
 }
+
+output "student_zones" {
+  description = "Delegated student subzone FQDNs."
+  value       = [for zone in module.student_zone : zone.fqdn]
+}
