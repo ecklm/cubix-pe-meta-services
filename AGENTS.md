@@ -26,8 +26,9 @@
 ## Port.io
 - Workflow expects GitHub secrets `PORT_CLIENT_ID` and `PORT_CLIENT_SECRET`.
 - Terraform's Port provider in `port.io.tf` relies on provider-native `PORT_CLIENT_ID` and `PORT_CLIENT_SECRET` environment variables; Terraform HCL has no `env.PORT_CLIENT_ID` expression.
+- `.github/workflows/register-student-zone.yml` is the Port self-service workflow: it accepts `subdomain_name` plus `name_server_1` through `name_server_4`, edits `students.auto.tfvars.json` with `jq`, and opens a PR with commit/title `user: Add <subdomain>`.
 
 ## Student Zones
 - `var.student_zones` is a map where each entry has `subdomain_name`, `name_servers`, and optional `ttl` defaulting to `300`.
 - The module input `parent_zone` is structurally typed for an `azurerm_dns_zone`; pass `parent_zone = azurerm_dns_zone.cubix_root`.
-- `*.auto.tfvars` is ignored by `.gitignore`; sample or local student data in auto tfvars will not be committed unless the ignore rule changes.
+- Student data is committed in `students.auto.tfvars.json`; Terraform auto-loads this JSON tfvars file.
