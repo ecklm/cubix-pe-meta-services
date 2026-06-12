@@ -1,0 +1,119 @@
+---
+name: Register Student Zone
+
+on:
+  workflow_dispatch:
+    inputs:
+      subdomain_name:
+        description: Subdomain to delegate under cubix.ecklm.com
+        required: true
+        type: string
+      name_server_1:
+        description: First delegated zone name server
+        required: true
+        type: string
+      name_server_2:
+        description: Second delegated zone name server
+        required: false
+        type: string
+      name_server_3:
+        description: Third delegated zone name server
+        required: false
+        type: string
+      name_server_4:
+        description: Fourth delegated zone name server
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    name: Create Student Zone PR
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Update student zones
+        env:
+          SUBDOMAIN_NAME: ${{ inputs.subdomain_name }}
+          NAME_SERVER_1: ${{ inputs.name_server_1 }}
+          NAME_SERVER_2: ${{ inputs.name_server_2 }}
+          NAME_SERVER_3: ${{ inputs.name_server_3 }}
+          NAME_SERVER_4: ${{ inputs.name_server_4 }}
+        run: |
+          set -euo pipefail
+
+          tfvars_path="students.auto.tfvars.json"
+          subdomain="${SUBDOMAIN_NAME,,}"
+          subdomain="${subdomain//[[:space:]]/}"
+
+          if [[ ! "${subdomain}" =~ ^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$ ]]; then
+            echo "subdomain_name must be a single DNS label using lowercase letters, numbers, or hyphens" >&2
+            exit 1
+          fi
+
+          name_servers=()
+          for value in "${NAME_SERVER_1}" "${NAME_SERVER_2}" "${NAME_SERVER_3}" "${NAME_SERVER_4}"; do
+            value="${value,,}"
+            value="${value//[[:space:]]/}"
+
+            if [[ -z "${value}" ]]; then
+              continue
+            fi
+
+            if [[ "${value}" != *. ]]; then
+              value="${value}."
+            fi
+
+            if [[ ! "${value}" =~ ^[a-z0-9.-]+\.$ ]]; then
+              echo "invalid name server: ${value}" >&2
+              exit 1
+            fi
+
+            name_servers+=("${value}")
+          done
+
+          if [[ "${#name_servers[@]}" -eq 0 ]]; then
+            echo "at least one name server is required" >&2
+            exit 1
+          fi
+
+          if jq -e --arg subdomain "${subdomain}" '.student_zones | has($subdomain)' "${tfvars_path}" >/dev/null; then
+            echo "student zone already exists: ${subdomain}" >&2
+            exit 1
+          fi
+
+          name_servers_json=$(jq -n '$ARGS.positional' --args "${name_servers[@]}")
+
+          jq \
+            --arg subdomain "${subdomain}" \
+            --argjson name_servers "${name_servers_json}" \
+            '.student_zones[$subdomain] = {subdomain_name: $subdomain, name_servers: $name_servers}' \
+            "${tfvars_path}" > "${tfvars_path}.tmp"
+
+          mv "${tfvars_path}.tmp" "${tfvars_path}"
+
+      - name: Terraform Format
+        run: terraform fmt -recursive
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: port/register-${{ inputs.subdomain_name }}
+          delete-branch: true
+          commit-message: "user: Add ${{ inputs.subdomain_name }}"
+          title: "user: Add ${{ inputs.subdomain_name }}"
+          body: |
+            Port.io requested delegation for `${{ inputs.subdomain_name }}.cubix.ecklm.com`.
+
+            This PR updates `students.auto.tfvars.json` with the supplied name servers.
