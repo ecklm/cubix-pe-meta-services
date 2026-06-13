@@ -7,9 +7,25 @@ resource "port_entity" "meta_services" {
   identifier = "meta_services"
   blueprint  = "githubRepository"
   properties = {
+    number_props = {
+      monthly_workflow_failure_rate = 0
+      stale_pr_share_percent        = 0
+      weekly_workflow_failure_rate  = 0
+    }
     string_props = {
-      defaultBranch = "main"
-      description   = "Azure DNS meta services managed by Terraform"
+      codeowners         = null
+      cycle_time_trend   = "Stable"
+      defaultBranch      = "main"
+      description        = "Azure DNS meta services managed by Terraform"
+      failure_rate_trend = "Stable"
+      gitignore          = null
+      language           = null
+      last_push          = null
+      pr_template        = null
+      readme             = null
+      throughput_trend   = "Stable"
+      url                = null
+      visibility         = null
     }
   }
 
