@@ -28,7 +28,9 @@
 - Workflow expects GitHub secrets `PORT_CLIENT_ID` and `PORT_CLIENT_SECRET`.
 - Terraform's Port provider in `port.io.tf` relies on provider-native `PORT_CLIENT_ID` and `PORT_CLIENT_SECRET` environment variables; Terraform HCL has no `env.PORT_CLIENT_ID` expression.
 - `.github/workflows/register-student-zone.yml` is the Port self-service workflow: it accepts `subdomain_name` plus `name_server_1` through `name_server_4`, edits `students.auto.tfvars.json` with `jq`, and opens a PR with commit/title `user: Add <subdomain>`.
-- `port_action.register_student_zone` triggers `.github/workflows/register-student-zone.yml` through Port Ocean `integration_method` using installation ID `meta-services`; keep action input names aligned with workflow_dispatch input names.
+- `.github/workflows/delete-student-zone.yml` is the Port self-service workflow: it deletes the specified `subdomain_name` from `students.auto.tfvars.json` using `jq`, and opens a PR with commit/title `user: Delete <subdomain>`.
+- `port_action.register_student_zone` triggers `.github/workflows/register-student-zone.yml` through Port Ocean `integration_method` using installation ID `meta-services`; Port reports workflow status automatically.
+- `port_action.delete_student_zone` triggers `.github/workflows/delete-student-zone.yml` through Port Ocean `integration_method` using installation ID `meta-services`; Port reports workflow status automatically.
 
 ## Student Zones
 - `var.student_zones` is a map where each entry has `subdomain_name`, `name_servers`, and optional `ttl` defaulting to `300`.
