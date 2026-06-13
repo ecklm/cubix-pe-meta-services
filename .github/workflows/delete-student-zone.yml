@@ -24,6 +24,9 @@ jobs:
         with:
           ref: main
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Delete student zone entry
         env:
           SUBDOMAIN_NAME: ${{ inputs.subdomain_name }}
