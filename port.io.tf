@@ -74,17 +74,21 @@ resource "port_action" "register_student_zone" {
     }
   }
 
-  github_method = {
-    org                    = "ecklm"
-    repo                   = "cubix-pe-meta-services"
-    workflow               = "register-student-zone.yml"
-    report_workflow_status = true
-    workflow_inputs = jsonencode({
-      subdomain_name = "{{ .inputs.subdomain_name }}"
-      name_server_1  = "{{ .inputs.name_server_1 }}"
-      name_server_2  = "{{ .inputs.name_server_2 }}"
-      name_server_3  = "{{ .inputs.name_server_3 }}"
-      name_server_4  = "{{ .inputs.name_server_4 }}"
-    })
+  integration_method = {
+    installation_id         = "meta-services"
+    integration_action_type = "dispatch_workflow"
+    integration_action_execution_properties = {
+      org                    = "ecklm"
+      repo                   = "cubix-pe-meta-services"
+      workflow               = "register-student-zone.yml"
+      report_workflow_status = true
+      workflow_inputs = jsonencode({
+        subdomain_name = "{{ .inputs.subdomain_name }}"
+        name_server_1  = "{{ .inputs.name_server_1 }}"
+        name_server_2  = "{{ .inputs.name_server_2 }}"
+        name_server_3  = "{{ .inputs.name_server_3 }}"
+        name_server_4  = "{{ .inputs.name_server_4 }}"
+      })
+    }
   }
 }
