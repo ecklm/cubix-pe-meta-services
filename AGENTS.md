@@ -10,6 +10,7 @@
 - Validate locally with `terraform init -backend=false -reconfigure && terraform validate` if Azure backend auth/state access is not available.
 - Use normal remote-state init with `terraform init` only when the Azure backend exists and your Azure login has state access.
 - Do not recreate `scripts/bootstrap-tfstate.sh`; backend bootstrapping was intentionally removed.
+- Always use `curl --fail` for HTTP calls in scripts/workflows so failed API responses fail the step.
 
 ## Remote State
 - Backend is AzureRM in `provider.tf`: resource group `cubix-meta-services`, storage account `cubixmetastore`, container `tfstate`, key `metaservices.tfstate`.
