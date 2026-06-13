@@ -67,7 +67,7 @@ jobs:
             value="${value,,}"
             value="${value//[[:space:]]/}"
 
-            if [[ -z "${value}" ]]; then
+            if [[ -z "${value}" || "${value}" == "null" ]]; then
               continue
             fi
 
