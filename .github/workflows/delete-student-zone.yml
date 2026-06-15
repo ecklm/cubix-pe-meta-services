@@ -66,5 +66,4 @@ jobs:
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
         run: |
           set -euo pipefail
-          gh pr review "$PR_URL" --approve
           gh pr merge "$PR_URL" --auto --merge
