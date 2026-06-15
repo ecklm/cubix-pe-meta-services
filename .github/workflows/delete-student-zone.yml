@@ -67,3 +67,13 @@ jobs:
         run: |
           set -euo pipefail
           gh pr merge "$PR_URL" --auto --merge
+
+          echo "Waiting for PR to be merged..."
+          while [[ "$(gh pr view "$PR_URL" --json merged --jq .merged)" != "true" ]]; do
+            if [[ "$(gh pr view "$PR_URL" --json state --jq .state)" == "CLOSED" ]]; then
+              echo "PR was closed without merging."
+              exit 1
+            fi
+            sleep 10
+          done
+          echo "PR successfully merged."
