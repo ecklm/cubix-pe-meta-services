@@ -40,7 +40,6 @@ jobs:
     name: Terraform Plan
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    environment: terraform-plan-approval
 
     steps:
       - name: Checkout
