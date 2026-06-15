@@ -48,6 +48,7 @@ jobs:
         run: terraform fmt -recursive
 
       - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
           branch: port/delete-${{ inputs.subdomain_name }}
@@ -58,3 +59,12 @@ jobs:
             Port.io requested deletion for `${{ inputs.subdomain_name }}.cubix.ecklm.com`.
             
             This PR updates `students.auto.tfvars.json` to remove the delegated zone.
+
+      - name: Approve and Auto-Merge PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
+        run: |
+          set -euo pipefail
+          gh pr review "$PR_URL" --approve
+          gh pr merge "$PR_URL" --auto --merge

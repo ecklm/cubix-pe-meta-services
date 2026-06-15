@@ -1,5 +1,8 @@
 # AGENTS.md
 
+## IMPORTANT: Keep Updated
+- This file is the primary source of truth for repository automation conventions. Update this file whenever workflows, automation triggers, or infrastructure patterns change.
+
 ## Repository Shape
 - This is a Terraform-only repo for Azure DNS meta services; there is no README or app code.
 - Root zone is `azurerm_dns_zone.cubix_root` for `cubix.ecklm.com` in resource group `cubix-meta-services`.
@@ -18,7 +21,7 @@
 
 ## GitHub Actions / OIDC
 - `.github/workflows/terraform.yml` runs `plan` on PRs, `apply` on pushes to `main`, and supports manual `workflow_dispatch` with `action = plan|apply`.
-- PR plans are gated by the GitHub Environment `terraform-plan-approval`; configure that environment with required reviewers so PR checks stay pending until explicitly approved.
+- PR plans run automatically for internal PRs; no manual approval gate is configured.
 - `main` branch protection requires the `Terraform Plan` status check with admin enforcement enabled; PR reviews are not required.
 - Workflow expects GitHub secret `AZURE_CLIENT_ID`; tenant and subscription IDs are hardcoded in workflow/provider.
 - `scripts/setup-github-oidc.sh` creates/reuses user-assigned managed identity `cubix-metaservices-github-terraform`, adds GitHub federated credentials, assigns Azure roles, and sets `AZURE_CLIENT_ID` via `gh secret set`.
@@ -27,8 +30,8 @@
 ## Port.io
 - Workflow expects GitHub secrets `PORT_CLIENT_ID` and `PORT_CLIENT_SECRET`.
 - Terraform's Port provider in `port.io.tf` relies on provider-native `PORT_CLIENT_ID` and `PORT_CLIENT_SECRET` environment variables; Terraform HCL has no `env.PORT_CLIENT_ID` expression.
-- `.github/workflows/register-student-zone.yml` is the Port self-service workflow: it accepts `subdomain_name` plus `name_server_1` through `name_server_4`, edits `students.auto.tfvars.json` with `jq`, and opens a PR with commit/title `user: Add <subdomain>`.
-- `.github/workflows/delete-student-zone.yml` is the Port self-service workflow: it deletes the specified `subdomain_name` from `students.auto.tfvars.json` using `jq`, and opens a PR with commit/title `user: Delete <subdomain>`.
+- `.github/workflows/register-student-zone.yml` is the Port self-service workflow: it accepts `subdomain_name` plus `name_server_1` through `name_server_4`, edits `students.auto.tfvars.json` with `jq`, and opens a PR with commit/title `user: Add <subdomain>`; the workflow automatically approves and merges the PR.
+- `.github/workflows/delete-student-zone.yml` is the Port self-service workflow: it deletes the specified `subdomain_name` from `students.auto.tfvars.json` using `jq`, and opens a PR with commit/title `user: Delete <subdomain>`; the workflow automatically approves and merges the PR.
 - `port_action.register_student_zone` triggers `.github/workflows/register-student-zone.yml` through Port Ocean `integration_method` using installation ID `meta-services`; Port reports workflow status automatically.
 - `port_action.delete_student_zone` triggers `.github/workflows/delete-student-zone.yml` through Port Ocean `integration_method` using installation ID `meta-services`; Port reports workflow status automatically.
 
