@@ -57,7 +57,7 @@ jobs:
           title: "user: Delete ${{ inputs.subdomain_name }}"
           body: |
             Port.io requested deletion for `${{ inputs.subdomain_name }}.cubix.ecklm.com`.
-            
+
             This PR updates `students.auto.tfvars.json` to remove the delegated zone.
 
       - name: Approve and Auto-Merge PR
@@ -69,7 +69,7 @@ jobs:
           gh pr merge "$PR_URL" --auto --merge
 
           echo "Waiting for PR to be merged..."
-          while [[ "$(gh pr view "$PR_URL" --json merged --jq .merged)" != "true" ]]; do
+          while [[ "$(gh pr view "$PR_URL" --json state --jq .state)" != "MERGED" ]]; do
             if [[ "$(gh pr view "$PR_URL" --json state --jq .state)" == "CLOSED" ]]; then
               echo "PR was closed without merging."
               exit 1
