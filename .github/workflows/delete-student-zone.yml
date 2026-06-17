@@ -48,10 +48,18 @@ jobs:
       - name: Terraform Format
         run: terraform fmt -recursive
 
+      - name: Generate Port PR Token
+        id: port-pr-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.PORT_PR_APP_ID }}
+          private-key: ${{ secrets.PORT_PR_APP_PRIVATE_KEY }}
+
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ steps.port-pr-token.outputs.token }}
           branch: port/delete-${{ inputs.subdomain_name }}
           delete-branch: true
           commit-message: "user: Delete ${{ inputs.subdomain_name }}"
@@ -61,9 +69,9 @@ jobs:
 
             This PR updates `students.auto.tfvars.json` to remove the delegated zone.
 
-      - name: Approve and Auto-Merge PR
+      - name: Enable Auto-Merge PR
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.port-pr-token.outputs.token }}
           PR_URL: ${{ steps.cpr.outputs.pull-request-url }}
         run: |
           set -euo pipefail
@@ -81,5 +89,5 @@ jobs:
 
       - name: Dispatch Terraform Apply
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ steps.port-pr-token.outputs.token }}
         run: gh workflow run terraform.yml --ref main -f action=apply
