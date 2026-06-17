@@ -86,8 +86,3 @@ jobs:
             sleep 10
           done
           echo "PR successfully merged."
-
-      - name: Dispatch Terraform Apply
-        env:
-          GH_TOKEN: ${{ steps.port-pr-token.outputs.token }}
-        run: gh workflow run terraform.yml --ref main -f action=apply
