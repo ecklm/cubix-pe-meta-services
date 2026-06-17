@@ -1,7 +1,8 @@
 # AGENTS.md
 
-## IMPORTANT: Keep Updated
-- This file is the primary source of truth for repository automation conventions. Update this file whenever workflows, automation triggers, or infrastructure patterns change.
+## IMPORTANT
+- Keep Updated: This file is the primary source of truth for repository automation conventions. Update this file whenever workflows, automation triggers, or infrastructure patterns change.
+- Always use `caveman` skill at ultra level from the start in each session.
 
 ## Repository Shape
 - This is a Terraform-only repo for Azure DNS meta services; there is no README or app code.
