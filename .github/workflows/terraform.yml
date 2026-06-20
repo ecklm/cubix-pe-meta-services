@@ -92,7 +92,7 @@ jobs:
               exit 1
             fi
 
-            sleep_seconds=$((RANDOM % 10 + 1))
+            sleep_seconds=$((RANDOM % 30 + 1))
             echo "Terraform state blob is ${lease_status}; waiting ${sleep_seconds}s..."
             sleep "${sleep_seconds}"
             elapsed_seconds=$((elapsed_seconds + sleep_seconds))
