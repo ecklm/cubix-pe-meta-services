@@ -24,7 +24,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: terraform-state
+  group: terraform-${{ github.ref }}
   cancel-in-progress: false
 
 env:
@@ -71,7 +71,6 @@ jobs:
           set -euo pipefail
 
           timeout_seconds=600
-          sleep_seconds=15
           elapsed_seconds=0
 
           while true; do
@@ -93,6 +92,7 @@ jobs:
               exit 1
             fi
 
+            sleep_seconds=$((RANDOM % 10 + 1))
             echo "Terraform state blob is ${lease_status}; waiting ${sleep_seconds}s..."
             sleep "${sleep_seconds}"
             elapsed_seconds=$((elapsed_seconds + sleep_seconds))
