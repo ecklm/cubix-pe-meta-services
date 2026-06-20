@@ -24,7 +24,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: terraform-${{ github.ref }}
+  group: terraform-state
   cancel-in-progress: false
 
 env:
@@ -61,6 +61,43 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      # Terraform's -lock-timeout retries normal lock contention, but AzureRM can
+      # fail immediately when the blob lease exists and terraformlockid metadata
+      # is empty. Poll the backend blob lease directly before plan/apply so the
+      # command starts only after Azure reports the state blob as unlocked.
+      - &wait-terraform-state-lock
+        name: Wait for Terraform State Lock
+        run: |
+          set -euo pipefail
+
+          timeout_seconds=600
+          sleep_seconds=15
+          elapsed_seconds=0
+
+          while true; do
+            lease_status="$(az storage blob show \
+              --account-name cubixmetastore \
+              --container-name tfstate \
+              --name metaservices.tfstate \
+              --auth-mode login \
+              --query properties.lease.status \
+              --output tsv)"
+
+            if [[ "${lease_status}" == "unlocked" ]]; then
+              echo "Terraform state blob is unlocked."
+              break
+            fi
+
+            if (( elapsed_seconds >= timeout_seconds )); then
+              echo "Timed out waiting for Terraform state blob lease to be released." >&2
+              exit 1
+            fi
+
+            echo "Terraform state blob is ${lease_status}; waiting ${sleep_seconds}s..."
+            sleep "${sleep_seconds}"
+            elapsed_seconds=$((elapsed_seconds + sleep_seconds))
+          done
+
       - name: Terraform Plan
         run: terraform plan -input=false -lock-timeout=10m
 
@@ -89,6 +126,8 @@ jobs:
       - name: Terraform Validate
         run: terraform validate
 
+      - *wait-terraform-state-lock
+
       - name: Terraform Plan
         run: terraform plan -input=false -lock-timeout=10m
 
@@ -116,6 +155,8 @@ jobs:
 
       - name: Terraform Validate
         run: terraform validate
+
+      - *wait-terraform-state-lock
 
       - name: Terraform Apply
         run: terraform apply -input=false -auto-approve -lock-timeout=10m
