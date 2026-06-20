@@ -1,7 +1,7 @@
 ---
 name: Delete Student Zone
 
-on:
+"on":
   workflow_dispatch:
     inputs:
       subdomain_name:
@@ -38,17 +38,22 @@ jobs:
           SUBDOMAIN_NAME: ${{ inputs.subdomain_name }}
         run: |
           set -euo pipefail
-          tfvars_path="students.auto.tfvars.json"
           subdomain="${SUBDOMAIN_NAME,,}"
           subdomain="${subdomain//[[:space:]]/}"
 
-          if ! jq -e --arg subdomain "${subdomain}" '.student_zones | has($subdomain)' "${tfvars_path}" >/dev/null; then
+          if [[ ! "${subdomain}" =~ ^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$ ]]; then
+            echo "subdomain_name must be a single DNS label using lowercase letters, numbers, or hyphens" >&2
+            exit 1
+          fi
+
+          zone_path="students/${subdomain}.json"
+
+          if [[ ! -f "${zone_path}" ]]; then
             echo "student zone does not exist: ${subdomain}" >&2
             exit 1
           fi
 
-          jq --arg subdomain "${subdomain}" 'del(.student_zones[$subdomain])' "${tfvars_path}" > "${tfvars_path}.tmp"
-          mv "${tfvars_path}.tmp" "${tfvars_path}"
+          rm "${zone_path}"
 
       - name: Terraform Format
         run: terraform fmt -recursive
@@ -72,7 +77,7 @@ jobs:
           body: |
             Port.io requested deletion for `${{ inputs.subdomain_name }}.cubix.ecklm.com`.
 
-            This PR updates `students.auto.tfvars.json` to remove the delegated zone.
+            This PR removes `students/${{ inputs.subdomain_name }}.json`.
 
       - name: Enable Auto-Merge PR
         env:

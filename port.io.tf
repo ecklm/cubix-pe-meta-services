@@ -22,7 +22,7 @@ resource "port_blueprint" "student_zone" {
 }
 
 resource "port_entity" "student_zone" {
-  for_each   = var.student_zones
+  for_each   = local.student_zones
   blueprint  = port_blueprint.student_zone.identifier
   identifier = each.key
   title      = "${each.key}.cubix.ecklm.com"

@@ -9,6 +9,19 @@ variable "parent_zone" {
 variable "name_servers" {
   description = "Name servers for the delegated student DNS zone."
   type        = list(string)
+
+  validation {
+    condition     = length(var.name_servers) > 0
+    error_message = "At least one delegated name server is required."
+  }
+
+  validation {
+    condition = alltrue([
+      for name_server in var.name_servers :
+      length(name_server) <= 253 && can(regex("^([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\\.)+$", name_server))
+    ])
+    error_message = "Each name server must be a lowercase fully qualified DNS name with a trailing dot."
+  }
 }
 
 variable "subdomain_name" {
@@ -20,4 +33,5 @@ variable "ttl" {
   description = "TTL for the delegated NS record."
   type        = number
   default     = 300
+  nullable    = false
 }
