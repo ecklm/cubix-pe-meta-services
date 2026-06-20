@@ -1,0 +1,8 @@
+{
+  "b": {
+    "subdomain_name": "b",
+    "name_servers": [
+      "n2.mutya.io."
+    ]
+  }
+}
