@@ -1,8 +1,0 @@
-{
-  "hello": {
-    "subdomain_name": "hello",
-    "name_servers": [
-      "n1.sasd.io."
-    ]
-  }
-}
