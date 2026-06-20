@@ -1,9 +1,0 @@
-{
-  "alice": {
-    "subdomain_name": "alice",
-    "name_servers": [
-      "ns1.alice.example.com.",
-      "ns2.alice.example.com."
-    ]
-  }
-}
