@@ -1,0 +1,8 @@
+{
+  "a": {
+    "subdomain_name": "a",
+    "name_servers": [
+      "n1.sasd.io."
+    ]
+  }
+}
