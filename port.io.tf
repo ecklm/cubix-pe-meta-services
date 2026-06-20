@@ -85,13 +85,16 @@ resource "port_action" "register_student_zone" {
       org                    = "ecklm"
       repo                   = "cubix-pe-meta-services"
       workflow               = "register-student-zone.yml"
-      report_workflow_status = true
+      report_workflow_status = false
       workflow_inputs = jsonencode({
         subdomain_name = "{{ .inputs.subdomain_name }}"
         name_server_1  = "{{ .inputs.name_server_1 }}"
         name_server_2  = "{{ .inputs.name_server_2 }}"
         name_server_3  = "{{ .inputs.name_server_3 }}"
         name_server_4  = "{{ .inputs.name_server_4 }}"
+        port_context = jsonencode({
+          runId = "{{ .run.id }}"
+        })
       })
     }
   }
@@ -115,9 +118,12 @@ resource "port_action" "delete_student_zone" {
       org                    = "ecklm"
       repo                   = "cubix-pe-meta-services"
       workflow               = "delete-student-zone.yml"
-      report_workflow_status = true
+      report_workflow_status = false
       workflow_inputs = jsonencode({
         subdomain_name = "{{ .entity.identifier }}"
+        port_context = jsonencode({
+          runId = "{{ .run.id }}"
+        })
       })
     }
   }

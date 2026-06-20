@@ -8,6 +8,11 @@ on:
         description: Subdomain to delete under cubix.ecklm.com
         required: true
         type: string
+      port_context:
+        description: Port action run context
+        required: false
+        default: '{"runId":""}'
+        type: string
 
 permissions:
   actions: write
@@ -86,3 +91,15 @@ jobs:
             sleep 10
           done
           echo "PR successfully merged."
+
+      - name: Report Final Status to Port
+        if: ${{ always() && fromJson(inputs.port_context).runId != '' }}
+        uses: port-labs/port-github-action@v1
+        with:
+          clientId: ${{ secrets.PORT_CLIENT_ID }}
+          clientSecret: ${{ secrets.PORT_CLIENT_SECRET }}
+          operation: PATCH_RUN
+          runId: ${{ fromJson(inputs.port_context).runId }}
+          status: ${{ job.status == 'success' && 'SUCCESS' || 'FAILURE' }}
+          logMessage: "GitHub workflow completed with status: ${{ job.status }}"
+          link: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
