@@ -29,6 +29,11 @@ variable "subdomain_name" {
   type        = string
 }
 
+variable "tags" {
+  description = "Tags to apply to the delegated student NS record."
+  type        = map(string)
+}
+
 variable "ttl" {
   description = "TTL for the delegated NS record."
   type        = number
