@@ -13,6 +13,7 @@ module "student_zone" {
   parent_zone    = azurerm_dns_zone.cubix_root
   subdomain_name = each.value.subdomain_name
   name_servers   = each.value.name_servers
+  tags           = local.tags
   ttl            = lookup(each.value, "ttl", null)
 
   depends_on = [
