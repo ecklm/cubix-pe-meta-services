@@ -1,0 +1,10 @@
+{
+  "pistike": {
+    "subdomain_name": "pistike",
+    "name_servers": [
+      "ns1-02.azure-dns.com.",
+      "ns3-02.azure-dns.org.",
+      "ns4-02.azure-dns.info."
+    ]
+  }
+}
